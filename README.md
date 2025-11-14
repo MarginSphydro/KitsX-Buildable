@@ -1,3 +1,6 @@
+## Shit the plugin couldn't load on server even I used many AI to solve the build problem
+## Buildable but unloadable
+
 the best kits plugin for Crystal PvP servers
 
 ## Skript Support
