@@ -28,6 +28,7 @@ import dev.darkxx.utils.text.color.ColorizeText;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -76,5 +77,15 @@ public class KitRoomAdminCommand extends XyrisCommand<KitsX> {
             sender.sendMessage(ColorizeText.hex("&#ffa6a6Invalid category or action."));
             return false;
         }
+    }
+
+    /**
+     * Gets the owner of this PluginIdentifiableCommand.
+     *
+     * @return Plugin that owns this PluginIdentifiableCommand.
+     */
+    @Override
+    public @NotNull Plugin getPlugin() {
+        return null;
     }
 }

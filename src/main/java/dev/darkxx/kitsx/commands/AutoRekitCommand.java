@@ -30,6 +30,7 @@ import dev.darkxx.utils.text.color.ColorizeText;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -56,9 +57,23 @@ public class AutoRekitCommand extends XyrisCommand<KitsX> {
                 }
             }
 
-            AutoRekitMenu.openAutoRekitMenu(player).open(player);
+            try {
+                AutoRekitMenu.openAutoRekitMenu(player).open(player);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
             return true;
         }
         return false;
+    }
+
+    /**
+     * Gets the owner of this PluginIdentifiableCommand.
+     *
+     * @return Plugin that owns this PluginIdentifiableCommand.
+     */
+    @Override
+    public @NotNull Plugin getPlugin() {
+        return null;
     }
 }

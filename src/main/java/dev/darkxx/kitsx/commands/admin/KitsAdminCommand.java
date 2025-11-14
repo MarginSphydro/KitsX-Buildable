@@ -30,6 +30,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -103,5 +104,15 @@ public class KitsAdminCommand extends XyrisCommand<KitsX> {
                     .collect(Collectors.toList());
         }
         return super.tabComplete(sender, alias, args);
+    }
+
+    /**
+     * Gets the owner of this PluginIdentifiableCommand.
+     *
+     * @return Plugin that owns this PluginIdentifiableCommand.
+     */
+    @Override
+    public @NotNull Plugin getPlugin() {
+        return null;
     }
 }

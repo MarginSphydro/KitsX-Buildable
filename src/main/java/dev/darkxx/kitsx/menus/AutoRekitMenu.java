@@ -56,7 +56,7 @@ public class AutoRekitMenu extends GuiBuilder {
         super(CONFIG.getConfig().getInt("auto_rekit.size"));
     }
 
-    public static @NotNull GuiBuilder openAutoRekitMenu(Player player) {
+    public static @NotNull GuiBuilder openAutoRekitMenu(Player player) throws ClassNotFoundException {
         GuiBuilder inventory = new GuiBuilder(CONFIG.getConfig().getInt("auto_rekit.size", 27), CONFIG.getConfig().getString("auto_rekit.title", "Auto Rekit"));
 
         addFilterItems(inventory);
@@ -75,7 +75,7 @@ public class AutoRekitMenu extends GuiBuilder {
         }
     }
 
-    private static void addToggleAutoRekitItem(GuiBuilder inventory, Player player) {
+    private static void addToggleAutoRekitItem(GuiBuilder inventory, Player player) throws ClassNotFoundException {
         String configPath = "auto_rekit.toggle_auto_rekit";
         Material defaultMaterial = Material.NETHERITE_SWORD;
 

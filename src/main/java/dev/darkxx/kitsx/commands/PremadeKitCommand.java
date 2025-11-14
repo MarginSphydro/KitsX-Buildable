@@ -29,6 +29,7 @@ import dev.darkxx.utils.text.color.ColorizeText;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -75,5 +76,15 @@ public class PremadeKitCommand extends XyrisCommand<KitsX> {
             return true;
         }
         return true;
+    }
+
+    /**
+     * Gets the owner of this PluginIdentifiableCommand.
+     *
+     * @return Plugin that owns this PluginIdentifiableCommand.
+     */
+    @Override
+    public @NotNull Plugin getPlugin() {
+        return null;
     }
 }
