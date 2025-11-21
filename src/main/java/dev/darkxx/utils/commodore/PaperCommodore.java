@@ -63,9 +63,9 @@ final class PaperCommodore extends AbstractCommodore implements Commodore, Liste
     }
 
     @EventHandler
-    public void onPlayerSendCommandsEvent(Event event) {
+    public void onPlayerSendCommandsEvent(Object event) {
         // Use reflection to avoid a compile-time dependency on Paper classes
-        if (!event.getClass().getName().equals("com.destroystokyo.paper.event.brigadier.AsyncPlayerSendCommandsEvent")) {
+        if (event == null || !event.getClass().getName().equals("com.destroystokyo.paper.event.brigadier.AsyncPlayerSendCommandsEvent")) {
             return;
         }
         try {

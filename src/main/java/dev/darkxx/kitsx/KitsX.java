@@ -108,9 +108,15 @@ public final class KitsX extends PluginWrapper {
 
     @Override
     protected void stop() {
-        getKitUtil().saveAll();
-        getEnderChestUtil().saveAll();
-        getPremadeKitUtil().saveAll();
+        if (getKitUtil() != null) {
+            getKitUtil().saveAll();
+        }
+        if (getEnderChestUtil() != null) {
+            getEnderChestUtil().saveAll();
+        }
+        if (getPremadeKitUtil() != null) {
+            getPremadeKitUtil().saveAll();
+        }
     }
 
     private boolean rekit() {
