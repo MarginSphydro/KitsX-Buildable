@@ -1,4 +1,4 @@
-## I fixed it competely
+## I fixed it completely
 ## Just open your intellij idea and build it
 
 the best kits plugin for Crystal PvP servers
