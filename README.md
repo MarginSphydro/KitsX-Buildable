@@ -1,5 +1,5 @@
-## Shit the plugin couldn't load on server even I used many AI to solve the build problem
-## Buildable but unloadable
+## I fixed it competely
+## Just open your intellij idea and build it
 
 the best kits plugin for Crystal PvP servers
 
