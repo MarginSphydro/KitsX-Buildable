@@ -104,6 +104,8 @@ public final class KitsX extends PluginWrapper {
 
         log.sendMessage(ColorizeText.hex("&c&lKitsX &7› &fThe &#ff2e2eplugin &fhas been successfully enabled, created by &#ff2e2eXyrisPlugins &fwith &#ff2e2e❤"));
         log.sendMessage(ColorizeText.hex("&c&lKitsX &7› &fJoin our &#ff2e2esupport server &fat &#ff2e2ehttps://xyris.fun/devs/"));
+        log.sendMessage(ColorizeText.hex("&c&lKitsX &7› &fBuildable edition made by MarginSphydro (Minecraft IGN:mark_7601)"));
+        log.sendMessage(ColorizeText.hex("&c&lKitsX &7› &fhttps://github.com/MarginSphydro/KitsX-Buildable"));
     }
 
     @Override
