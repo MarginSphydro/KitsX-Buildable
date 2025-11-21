@@ -107,6 +107,12 @@ public abstract class XyrisCommand<T extends JavaPlugin> extends Command impleme
     public T m25getPlugin() {
         return this.plugin;
     }
+    
+    // Proper implementation of PluginIdentifiableCommand interface
+    @Override
+    public T getPlugin() {
+        return this.plugin;
+    }
 
     public boolean execute(CommandSender sender, String command, String[] arg) {
         if (arg.length > 0 && this.subcommands.containsKey(arg[0])) {

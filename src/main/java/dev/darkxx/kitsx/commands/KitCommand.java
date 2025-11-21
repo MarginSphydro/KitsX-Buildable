@@ -62,13 +62,4 @@ public class KitCommand extends XyrisCommand<KitsX> {
         return false;
     }
 
-    /**
-     * Gets the owner of this PluginIdentifiableCommand.
-     *
-     * @return Plugin that owns this PluginIdentifiableCommand.
-     */
-    @Override
-    public @NotNull Plugin getPlugin() {
-        return null;
-    }
 }

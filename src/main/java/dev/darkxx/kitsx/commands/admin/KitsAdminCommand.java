@@ -106,13 +106,4 @@ public class KitsAdminCommand extends XyrisCommand<KitsX> {
         return super.tabComplete(sender, alias, args);
     }
 
-    /**
-     * Gets the owner of this PluginIdentifiableCommand.
-     *
-     * @return Plugin that owns this PluginIdentifiableCommand.
-     */
-    @Override
-    public @NotNull Plugin getPlugin() {
-        return null;
-    }
 }
