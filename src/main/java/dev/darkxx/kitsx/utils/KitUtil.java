@@ -35,6 +35,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,6 +53,14 @@ public class KitUtil implements KitsAPI {
     public static void of(JavaPlugin plugin) {
         configManager = ConfigManager.get(plugin);
         configManager.create("data/kits.yml");
+        File dir = new File(plugin.getDataFolder(), "data/kits");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+    }
+
+    private String playerFilePath(UUID uuid) {
+        return "data/kits/" + uuid + ".yml";
     }
 
     @Override
@@ -94,11 +103,18 @@ public class KitUtil implements KitsAPI {
                 kitData.put(playerName + "." + kitName + ".offhand", offhandItem);
 
                 for (Map.Entry<String, Object> entry : kitData.entrySet()) {
-                    configManager.set("data/kits.yml", entry.getKey(), entry.getValue());
+                    String filePath = playerFilePath(player.getUniqueId());
+                    configManager.create(filePath);
+                    configManager.set(filePath, entry.getKey(), entry.getValue());
                 }
 
                 try {
-                    configManager.saveConfig("data/kits.yml");
+                    String filePath = playerFilePath(player.getUniqueId());
+                    configManager.saveConfig(filePath);
+                    if (configManager.contains("data/kits.yml", playerName + "." + kitName)) {
+                        configManager.set("data/kits.yml", playerName + "." + kitName, null);
+                        configManager.saveConfig("data/kits.yml");
+                    }
                     new BukkitRunnable() {
                         @Override
                         public void run() {
@@ -122,18 +138,19 @@ public class KitUtil implements KitsAPI {
         Bukkit.getServer().getPluginManager().callEvent(event);
 
         if (!event.isCancelled()) {
-            if (configManager.contains("data/kits.yml", playerName + "." + kitName)) {
+            String filePath = playerFilePath(player.getUniqueId());
+            if (configManager.contains(filePath, playerName + "." + kitName)) {
                 for (int i = 0; i < 36; ++i) {
-                    ItemStack item = configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".inventory." + i);
+                    ItemStack item = configManager.getConfig(filePath).getItemStack(playerName + "." + kitName + ".inventory." + i);
                     player.getInventory().setItem(i, item);
                 }
 
                 for (int i = 0; i < 4; ++i) {
-                    ItemStack item = configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".armor." + i);
+                    ItemStack item = configManager.getConfig(filePath).getItemStack(playerName + "." + kitName + ".armor." + i);
                     player.getInventory().setItem(36 + i, item);
                 }
 
-                ItemStack offhandItem = configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".offhand");
+                ItemStack offhandItem = configManager.getConfig(filePath).getItemStack(playerName + "." + kitName + ".offhand");
                 player.getInventory().setItemInOffHand(offhandItem);
 
                 long currentTime = System.currentTimeMillis();
@@ -158,7 +175,52 @@ public class KitUtil implements KitsAPI {
 
                 KitsX.getEnderChestUtil().load(player, kitName);
             } else {
-                player.sendMessage(ColorizeText.hex("&#ffa6a6" + kitName + " is empty."));
+                if (configManager.contains("data/kits.yml", playerName + "." + kitName)) {
+                    for (int i = 0; i < 36; ++i) {
+                        ItemStack item = configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".inventory." + i);
+                        player.getInventory().setItem(i, item);
+                    }
+                    for (int i = 0; i < 4; ++i) {
+                        ItemStack item = configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".armor." + i);
+                        player.getInventory().setItem(36 + i, item);
+                    }
+                    ItemStack offhandItem = configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".offhand");
+                    player.getInventory().setItemInOffHand(offhandItem);
+
+                    for (int i = 0; i < 36; ++i) {
+                        configManager.set(filePath, playerName + "." + kitName + ".inventory." + i, configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".inventory." + i));
+                    }
+                    for (int i = 0; i < 4; ++i) {
+                        configManager.set(filePath, playerName + "." + kitName + ".armor." + i, configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".armor." + i));
+                    }
+                    configManager.set(filePath, playerName + "." + kitName + ".offhand", configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".offhand"));
+                    configManager.saveConfig(filePath);
+                    configManager.set("data/kits.yml", playerName + "." + kitName, null);
+                    configManager.saveConfig("data/kits.yml");
+
+                    long currentTime = System.currentTimeMillis();
+                    long lastTime = lastBroadcastTime.getOrDefault(playerName, 0L);
+                    long delayMillis = KitsX.getInstance().getConfig().getInt("broadcast.kit_load_message_delay", 10) * 50L;
+
+                    if (KitsX.getInstance().getConfig().getBoolean("broadcast.kit_load", true) && (currentTime - lastTime > delayMillis)) {
+                        String bcastLoaded = KitsX.getInstance().getConfig().getString("broadcast.kit_load_message");
+                        if (bcastLoaded != null) {
+                            bcastLoaded = bcastLoaded.replace("%player%", player.getName()).replace("%kit%", kitName);
+                            Bukkit.broadcastMessage(ColorizeText.hex(bcastLoaded));
+                        }
+                        lastBroadcastTime.put(playerName, currentTime);
+                    }
+
+                    String kitLoaded = KitsX.getInstance().getConfig().getString("messages.kit_loaded");
+                    if (kitLoaded != null) {
+                        kitLoaded = kitLoaded.replace("%kit%", kitName);
+                        player.sendMessage(ColorizeText.hex(kitLoaded));
+                    }
+
+                    KitsX.getEnderChestUtil().load(player, kitName);
+                } else {
+                    player.sendMessage(ColorizeText.hex("&#ffa6a6" + kitName + " is empty."));
+                }
             }
         }
     }
@@ -166,19 +228,37 @@ public class KitUtil implements KitsAPI {
     @Override
     public void set(@NotNull Player player, String kitName, GuiBuilder inventory) {
         String playerName = player.getUniqueId().toString();
-        if (configManager.contains("data/kits.yml", playerName + "." + kitName)) {
+        String filePath = playerFilePath(player.getUniqueId());
+        if (configManager.contains(filePath, playerName + "." + kitName)) {
             for (int i = 0; i < 36; ++i) {
-                ItemStack item = configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".inventory." + i);
+                ItemStack item = configManager.getConfig(filePath).getItemStack(playerName + "." + kitName + ".inventory." + i);
                 inventory.setItem(i, item);
             }
 
             for (int i = 0; i < 4; ++i) {
-                ItemStack item = configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".armor." + i);
+                ItemStack item = configManager.getConfig(filePath).getItemStack(playerName + "." + kitName + ".armor." + i);
                 inventory.setItem(36 + i, item);
             }
 
+            ItemStack offhandItem = configManager.getConfig(filePath).getItemStack(playerName + "." + kitName + ".offhand");
+            inventory.setItem(40, offhandItem);
+        } else if (configManager.contains("data/kits.yml", playerName + "." + kitName)) {
+            for (int i = 0; i < 36; ++i) {
+                ItemStack item = configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".inventory." + i);
+                inventory.setItem(i, item);
+                configManager.set(filePath, playerName + "." + kitName + ".inventory." + i, item);
+            }
+            for (int i = 0; i < 4; ++i) {
+                ItemStack item = configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".armor." + i);
+                inventory.setItem(36 + i, item);
+                configManager.set(filePath, playerName + "." + kitName + ".armor." + i, item);
+            }
             ItemStack offhandItem = configManager.getConfig("data/kits.yml").getItemStack(playerName + "." + kitName + ".offhand");
             inventory.setItem(40, offhandItem);
+            configManager.set(filePath, playerName + "." + kitName + ".offhand", offhandItem);
+            configManager.saveConfig(filePath);
+            configManager.set("data/kits.yml", playerName + "." + kitName, null);
+            configManager.saveConfig("data/kits.yml");
         }
     }
 
@@ -202,7 +282,12 @@ public class KitUtil implements KitsAPI {
     public void delete(@NotNull Player player, String kitName) {
         String playerName = player.getUniqueId().toString();
 
-        configManager.set("data/kits.yml", playerName + "." + kitName, null);
+        String filePath = playerFilePath(player.getUniqueId());
+        configManager.set(filePath, playerName + "." + kitName, null);
+        configManager.saveConfig(filePath);
+        if (configManager.contains("data/kits.yml", playerName + "." + kitName)) {
+            configManager.set("data/kits.yml", playerName + "." + kitName, null);
+        }
 
         try {
             configManager.saveConfig("data/kits.yml");
@@ -214,7 +299,8 @@ public class KitUtil implements KitsAPI {
     @Override
     public boolean exists(@NotNull Player player, String kitName) {
         String playerName = player.getUniqueId().toString();
-        return configManager.contains("data/kits.yml", playerName + "." + kitName);
+        String filePath = playerFilePath(player.getUniqueId());
+        return configManager.contains(filePath, playerName + "." + kitName) || configManager.contains("data/kits.yml", playerName + "." + kitName);
     }
 
     @Override

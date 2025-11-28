@@ -71,7 +71,18 @@ public class ConfigManager {
     public void create(String filePath) {
         File configFile = new File(plugin.getDataFolder(), filePath);
         if (!configFile.exists()) {
-            plugin.saveResource(filePath, false);
+            File parent = configFile.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
+            try {
+                plugin.saveResource(filePath, false);
+            } catch (IllegalArgumentException e) {
+                try {
+                    configFile.createNewFile();
+                } catch (IOException ignored) {
+                }
+            }
         }
         FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
         configurations.put(filePath, config);
