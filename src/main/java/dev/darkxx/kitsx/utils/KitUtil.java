@@ -102,14 +102,13 @@ public class KitUtil implements KitsAPI {
 
                 kitData.put(playerName + "." + kitName + ".offhand", offhandItem);
 
+                String filePath = playerFilePath(player.getUniqueId());
+                configManager.create(filePath);
                 for (Map.Entry<String, Object> entry : kitData.entrySet()) {
-                    String filePath = playerFilePath(player.getUniqueId());
-                    configManager.create(filePath);
                     configManager.set(filePath, entry.getKey(), entry.getValue());
                 }
 
                 try {
-                    String filePath = playerFilePath(player.getUniqueId());
                     configManager.saveConfig(filePath);
                     if (configManager.contains("data/kits.yml", playerName + "." + kitName)) {
                         configManager.set("data/kits.yml", playerName + "." + kitName, null);
