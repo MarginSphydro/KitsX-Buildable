@@ -98,6 +98,7 @@ public final class KitsX extends PluginWrapper {
             new KitLoadCommand(this, "kit" + i, i);
         }
         new PremadeKitCommand(this);
+        new KitCopyCommand(this);
 
         Metrics metrics = new Metrics(this, 22161);
         HooksImpl.of(this);
